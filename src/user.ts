@@ -3,7 +3,7 @@ import { renderBlock } from "./lib.js";
 export function renderUserBlock(
   userName: string,
   userAvatarUrl: string,
-  favoriteItemsAmount: number
+  favoriteItemsAmount?: number
 ) {
   const favoritesCaption = favoriteItemsAmount
     ? favoriteItemsAmount
@@ -15,7 +15,7 @@ export function renderUserBlock(
     "user-block",
     `
     <div class="header-container">
-      <img class="avatar" src="${userAvatarUrl}" alt="Wade Warren" />
+      <img class="avatar" src="${userAvatarUrl}" alt="user avatar" />
       <div class="info">
           <p class="name">${userName}</p>
           <p class="fav">
