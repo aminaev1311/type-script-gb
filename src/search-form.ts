@@ -18,7 +18,7 @@ checkOutDate.setDate(checkOutDate.getDate() + 3);
 const checkOutDateString = formatDate(checkOutDate);
 
 const minCheckOutDate = new Date(today);
-minCheckOutDate.setDate(checkOutDate.getDate() + 2);
+minCheckOutDate.setDate(minCheckOutDate.getDate() + 2);
 const minCheckOutDateString = formatDate(minCheckOutDate);
 
 export function renderSearchFormBlock(

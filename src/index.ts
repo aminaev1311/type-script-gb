@@ -32,6 +32,12 @@ window.addEventListener("DOMContentLoaded", () => {
       },
     }
   );
+
+  handleSearch();
+
+  fetch("http://localhost:3000/places")
+    .then((res) => res.json())
+    .then((data) => console.log(data));
 });
 
 interface SearchFormData {
@@ -40,28 +46,50 @@ interface SearchFormData {
   maxPrice: number;
 }
 
-export function handleSearch(): SearchFormData {
-  const searchData: SearchFormData = null;
+interface Place {}
+
+function handleSearch(): SearchFormData {
+  console.log("handleSearch");
+  const searchData: SearchFormData = {
+    checkIn: "",
+    checkOut: "",
+    maxPrice: 0,
+  };
   const form = document.getElementById("searchForm");
+  let formData = null;
 
   if (form instanceof HTMLFormElement) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const formData = new FormData(form);
-      searchData.checkIn = "" + formData.get("checkin");
-      searchData.checkOut = "" + formData.get("checkout");
-      searchData.maxPrice = +formData.get("price");
+      formData = new FormData(form);
+      searchData.checkIn = formData.get("checkin");
+      searchData.checkOut = formData.get("checkout");
+      searchData.maxPrice = formData.get("price");
+      search(searchData);
+      return searchData;
     });
   }
-  return searchData;
+  return null;
 }
 
-interface Place {
-  data: [];
+function search(searchData: SearchFormData) {
+  if (searchData != null) {
+    console.log(searchData);
+  }
 }
 
-export function search(searchData: SearchFormData) {
-  console.log(searchData);
-}
+// interface callback {
+//   (error?: Error, places?: Place[]): Error | Place[];
+// }
 
-search(handleSearch());
+// function callback(error: Error, places: Place[]) {
+//   const randomNumber = Math.random();
+//   if (randomNumber > 0.5) {
+//     return error;
+//   }
+//   return [];
+// }
+
+// function placeRequest(searchDate) {
+//   return Promise.resolve();
+// }
