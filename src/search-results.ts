@@ -1,32 +1,33 @@
-import { renderBlock } from './lib.js'
+import { renderBlock, addBlock } from "./lib.js";
+import { Place } from "./lib.js";
 
-export function renderSearchStubBlock () {
+export function renderSearchStubBlock() {
   renderBlock(
-    'search-results-block',
+    "search-results-block",
     `
     <div class="before-results-block">
       <img src="img/start-search.png" />
       <p>Чтобы начать поиск, заполните форму и&nbsp;нажмите "Найти"</p>
     </div>
     `
-  )
+  );
 }
 
-export function renderEmptyOrErrorSearchBlock (reasonMessage) {
+export function renderEmptyOrErrorSearchBlock(reasonMessage) {
   renderBlock(
-    'search-results-block',
+    "search-results-block",
     `
     <div class="no-results-block">
       <img src="img/no-results.png" />
       <p>${reasonMessage}</p>
     </div>
     `
-  )
+  );
 }
 
-export function renderSearchResultsBlock () {
+export function renderSearchResultsBlock() {
   renderBlock(
-    'search-results-block',
+    "search-results-block",
     `
     <div class="search-results-header">
         <p>Результаты поиска</p>
@@ -39,7 +40,7 @@ export function renderSearchResultsBlock () {
             </select>
         </div>
     </div>
-    <ul class="results-list">
+    <ul class="results-list" id="results-list">
       <li class="result">
         <div class="result-container">
           <div class="result-img-container">
@@ -84,5 +85,41 @@ export function renderSearchResultsBlock () {
       </li>
     </ul>
     `
-  )
+  );
+}
+
+export function renderHotel(hotel: Place) {
+  const items = JSON.parse(localStorage.getItem("favoriteItems"));
+
+  addBlock(
+    "search-results-block",
+    `<li class="result" hotel_id="${hotel.id}">
+        <div class="result-container">
+          <div class="result-img-container">
+            <div class="favorites ${
+              hotel.id in items ? "active" : ""
+            } }" hotel_id="${hotel.id}" hotel_name="${hotel.name}" hotel_img="${
+      hotel.image
+    }"></div>
+            <img class="result-img" src="${hotel.image}" alt="${hotel.name}">
+          </div>	
+          <div class="result-info">
+            <div class="result-info--header">
+              <p>${hotel.name}</p>
+              <p class="price">${hotel.price}&#8381;</p>
+            </div>
+            <div class="result-info--map"><i class="map-icon"></i>${
+              hotel.remoteness
+            }км от вас</div>
+            <div class="result-info--descr">${hotel.description}</div>
+            <div class="result-info--footer">
+              <div>
+                <button>Забронировать</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+      `
+  );
 }
