@@ -3,7 +3,12 @@ export function renderBlock(elementId, html) {
   element.innerHTML = html;
 }
 
-export function renderToast(message, action) {
+export function addBlock(elementId, html) {
+  const element = document.getElementById(elementId);
+  element.insertAdjacentHTML("beforeend", html);
+}
+
+export function renderToast(message, action?) {
   let messageText = "";
 
   if (message != null) {
@@ -23,17 +28,7 @@ export function renderToast(message, action) {
       if (action != null && action.handler != null) {
         action.handler();
       }
-      renderToast(null, "");
+      renderToast(null);
     };
   }
-}
-
-export function getUserData(key: unknown): string {
-  if (typeof key == "string") return localStorage.getItem(key);
-  return null;
-}
-
-export function getFavoritesAmount(key: unknown): string {
-  if (typeof key == "string") return localStorage.getItem(key);
-  return null;
 }

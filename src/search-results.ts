@@ -1,32 +1,32 @@
-import { renderBlock } from './lib.js'
+import { addBlock, renderBlock } from "./lib.js";
 
-export function renderSearchStubBlock () {
+export function renderSearchStubBlock() {
   renderBlock(
-    'search-results-block',
+    "search-results-block",
     `
     <div class="before-results-block">
       <img src="img/start-search.png" />
       <p>Чтобы начать поиск, заполните форму и&nbsp;нажмите "Найти"</p>
     </div>
     `
-  )
+  );
 }
 
-export function renderEmptyOrErrorSearchBlock (reasonMessage) {
+export function renderEmptyOrErrorSearchBlock(reasonMessage) {
   renderBlock(
-    'search-results-block',
+    "search-results-block",
     `
     <div class="no-results-block">
       <img src="img/no-results.png" />
       <p>${reasonMessage}</p>
     </div>
     `
-  )
+  );
 }
 
-export function renderSearchResultsBlock () {
+export function renderSearchResultsBlock(hotels) {
   renderBlock(
-    'search-results-block',
+    "search-results-block",
     `
     <div class="search-results-header">
         <p>Результаты поиска</p>
@@ -39,8 +39,57 @@ export function renderSearchResultsBlock () {
             </select>
         </div>
     </div>
-    <ul class="results-list">
-      <li class="result">
+    <ul class="results-list" id="results-list">
+    </ul>
+    `
+  );
+  hotels.length == 0
+    ? renderEmptyOrErrorSearchBlock("nothing found")
+    : renderHotels(hotels);
+}
+
+function renderHotels(hotels) {
+  for (let index = 0; index < hotels.length; index++) {
+    let { title, details, photos, totalPrice } = hotels[index];
+    renderHotel(title, details, photos[0], totalPrice);
+  }
+}
+
+function renderHotel(
+  title: string,
+  details: string,
+  imgName: string,
+  price: number
+) {
+  addBlock(
+    "results-list",
+    `
+  <li class="result" style="list-style-type:none;">
+        <div class="result-container">
+          <div class="result-img-container">
+            <div class="favorites"></div>
+            <img class="result-img" src="./img/${imgName}" alt="${imgName}">
+          </div>	
+          <div class="result-info">
+            <div class="result-info--header">
+              <p>${title}</p>
+              <p class="price">${price}&#8381;</p>
+            </div>
+            <div class="result-info--map"><i class="map-icon"></i> 1.1км от вас</div>
+            <div class="result-info--descr">${details}</div>
+            <div class="result-info--footer">
+              <div>
+                <button>Забронировать</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+  `
+  );
+}
+
+`<li class="result">
         <div class="result-container">
           <div class="result-img-container">
             <div class="favorites active"></div>
@@ -81,8 +130,4 @@ export function renderSearchResultsBlock () {
             </div>
           </div>
         </div>
-      </li>
-    </ul>
-    `
-  )
-}
+      </li>`;
