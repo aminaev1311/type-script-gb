@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
-    "outDir": "./public/scripts",
+    "outDir": "public/scripts",
     "target": "es2015",
     "module": "es2015",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "allowJs": true
   },
-  "files": ["./src/index.ts"]
+  "include": ["src/**/*"],
+  "lib": ["ES5", "ES2015", "DOM"]
 }
