@@ -2,16 +2,29 @@ import { renderSearchFormBlock } from "./search-form.js";
 import { renderSearchStubBlock } from "./search-results.js";
 import { renderUserBlock } from "./user.js";
 import { renderToast } from "./lib.js";
-import { addDays, cloneDate } from "./flat-rent-sdk.js";
-import { FlatRentSdk } from "./flat-rent-sdk.js";
-import { Homy } from "./homy.js";
+// import { FlatRentSdk } from "./flat-rent-sdk.js";
+import { FlatRentSdk } from "./providers/flat-rent-sdk/flat-rent-sdk.js";
+
+// import { Homy } from "./homy.js";
+import { Homy } from "./providers/homy/homy.js";
 import { renderSearchResultsBlock } from "./search-results.js";
+import { Hotel } from "./hotel.js";
+import { DatesHelper } from "./datesHelper.js";
 
 const flatSdk: FlatRentSdk = new FlatRentSdk();
 const homySdk: Homy = new Homy();
 const today = new Date();
 let checkin = today;
-let checkout = addDays(cloneDate(today), 2);
+let checkout = DatesHelper.addDays(DatesHelper.cloneDate(today), 2);
+let hotels = [];
+
+function sortByPriceAscending(one: Hotel, two: Hotel) {
+  return one.totalPrice - two.totalPrice;
+}
+
+function sortByPriceDescending(one: Hotel, two: Hotel) {
+  return two.totalPrice - one.totalPrice;
+}
 
 renderUserBlock(10);
 renderSearchFormBlock(
@@ -39,7 +52,6 @@ form.addEventListener("submit", async (e) => {
     flatRent,
   });
 
-  let hotels = [];
   const searchQuery = {
     city: "Санкт-Петербург",
     checkInDate: new Date(checkin as string),
@@ -62,6 +74,7 @@ form.addEventListener("submit", async (e) => {
       hotels = [...hotelsHomy, ...hotelsFlatRent];
     }
 
+    hotels.sort(sortByPriceAscending);
     renderSearchResultsBlock(hotels);
     renderToast(
       {
@@ -75,6 +88,21 @@ form.addEventListener("submit", async (e) => {
         },
       }
     );
+
+    const select = document.getElementById("select");
+    console.log(select);
+    select.addEventListener("change", (e) => {
+      console.log("select changed");
+      if (e.target instanceof HTMLSelectElement) {
+        console.log(e.target.value);
+        if (e.target.value === "cheap") {
+          hotels.sort(sortByPriceAscending);
+        } else {
+          hotels.sort(sortByPriceDescending);
+        }
+        return renderSearchResultsBlock(hotels);
+      }
+    });
   } catch (e) {
     renderToast(
       {
@@ -90,100 +118,3 @@ form.addEventListener("submit", async (e) => {
     );
   }
 });
-
-// sdk.get("mvm32l").then((flat) => {
-//   console.log("flat by id", flat);
-// });
-
-// sdk
-//   .search({ city: "Самара" })
-//   .then(console.log)
-//   .catch((result) => {
-//     console.error("serach incorrect city", result);
-//   });
-
-// sdk.search({ city: "Санкт-Петербург" }).catch((result) => {
-//   console.error("search without dates", result);
-// });
-
-// sdk
-//   .search({
-//     city: "Санкт-Петербург",
-//     checkInDate: new Date(2021, 6, 26),
-//   })
-//   .catch((result) => {
-//     console.error("search with only check-in date", result);
-//   });
-
-// sdk
-//   .search({
-//     city: "Санкт-Петербург",
-//     checkInDate: addDays(cloneDate(today), -1),
-//     checkOutDate: addDays(cloneDate(today), -6),
-//   })
-//   .catch((result) => {
-//     console.error("search with check-in in the past", result);
-//   });
-
-// sdk
-//   .search({
-//     city: "Санкт-Петербург",
-//     checkInDate: cloneDate(today),
-//     checkOutDate: addDays(cloneDate(today), -6),
-//   })
-//   .catch((result) => {
-//     console.error("serach with check-out date less than check-in", result);
-//   });
-
-// sdk
-//   .search({
-//     city: "Санкт-Петербург",
-//     checkInDate: cloneDate(today),
-//     checkOutDate: addDays(cloneDate(today), 1),
-//   })
-//   .then((result) => {
-//     console.log("serach for one night", result);
-//   });
-
-// sdk
-//   .search({
-//     city: "Санкт-Петербург",
-//     checkInDate: cloneDate(today),
-//     checkOutDate: addDays(cloneDate(today), 2),
-//   })
-//   .then((result) => {
-//     console.log("serach for two nights", result);
-//   });
-
-// sdk
-//   .search({
-//     city: "Санкт-Петербург",
-//     checkInDate: cloneDate(today),
-//     checkOutDate: addDays(cloneDate(today), 1),
-//     priceLimit: 4500,
-//   })
-//   .then((result) => {
-//     console.log("serach with price limit", result);
-//   });
-
-// sdk
-//   .book("ab2e2", cloneDate(today), addDays(cloneDate(today), 2))
-//   .then((result) => {
-//     console.log("book flat", result);
-
-//     sdk
-//       .search({
-//         city: "Санкт-Петербург",
-//         checkInDate: cloneDate(today),
-//         checkOutDate: addDays(cloneDate(today), 3),
-//       })
-//       .then((result) => {
-//         console.log("serach after booking", result);
-//       });
-//   });
-
-// sdk
-//   .book("vnd331", addDays(cloneDate(today), 5), addDays(cloneDate(today), 6))
-//   .then((result) => {
-//     console.log("book flat", result);
-//   });

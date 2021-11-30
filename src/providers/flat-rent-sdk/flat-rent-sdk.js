@@ -1,7 +1,7 @@
 const database = [
   {
     id: "vnd331",
-    title: "Homy: Radisson Royal Hotel",
+    title: "Flat-rent: Radisson Royal Hotel",
     details:
       "Отель расположен в 4 минутах ходьбы от станции метро «Маяковская». К услугам гостей фитнес-центр и спа-центр с сауной и гидромассажной ванной.",
     photos: ["vnd331.png", "vnd331.png"],
@@ -11,7 +11,7 @@ const database = [
   },
   {
     id: "ab2e2",
-    title: "Homy: Номера на Садовой",
+    title: "Flat-rent: Номера на Садовой",
     details:
       "Расположен в 7 минутах ходьбы от Невского проспекта. К услугам гостей круглосуточная стойка регистрации и бесплатный Wi-Fi.",
     photos: ["ab2e2.png", "ab2e2.png"],
@@ -21,7 +21,7 @@ const database = [
   },
   {
     id: "mvm32l",
-    title: "Homy: Мини Отель на Невском 136",
+    title: "Flat-rent: Мини Отель на Невском 136",
     details:
       "Мини-отель расположен в Санкт-Петербурге, в 5 минутах ходьбы от станции метро «Площадь Восстания» и Московского железнодорожного вокзала.",
     photos: ["mvm32l.png", "mvm32l.png"],
@@ -31,7 +31,7 @@ const database = [
   },
   {
     id: "bvep12",
-    title: "Homy: Отель Усадьба Державина",
+    title: "Flat-rent: Отель Усадьба Державина",
     details:
       "Прекрасный отель недалеко от Исаакиевского собора с бесплатным Wi-Fi на всей территории.",
     photos: ["bvep12.png", "bvep12.png"],
@@ -41,19 +41,10 @@ const database = [
   },
 ];
 
-// export function cloneDate(date) {
-//   return new Date(date.getTime());
-// }
+// export const backendPort = 3040;
+export const localStorageKey = "flat-rent-db";
 
-// export function addDays(date, days) {
-//   date.setDate(date.getDate() + days);
-//   return date;
-// }
-
-export const backendPort = 3040;
-export const localStorageKey = "homy-db";
-
-export class Homy {
+export class FlatRentSdk {
   constructor() {
     if (this._readDatabase() == null) {
       this._writeDatabase(database);

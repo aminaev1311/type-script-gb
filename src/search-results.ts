@@ -30,14 +30,14 @@ export function renderSearchResultsBlock(hotels) {
     `
     <div class="search-results-header">
         <p>Результаты поиска</p>
-        <div class="search-results-filter">
+        <form class="search-results-filter">
             <span><i class="icon icon-filter"></i> Сортировать:</span>
-            <select>
-                <option selected="">Сначала дешёвые</option>
-                <option selected="">Сначала дорогие</option>
-                <option>Сначала ближе</option>
+            <select id="select" name="select">
+                <option value="cheap">Сначала дешёвые</option>
+                <option value="expensive">Сначала дорогие</option>
+                <!---<option name="near">Сначала ближе</option>--->
             </select>
-        </div>
+        </form>
     </div>
     <ul class="results-list" id="results-list">
     </ul>
