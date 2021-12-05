@@ -1,9 +1,18 @@
-export function renderBlock(elementId, html) {
+export function renderBlock(elementId: string, html: string) {
   const element = document.getElementById(elementId);
-  element.innerHTML = html;
+  if (element) {
+    element.innerHTML = html;
+  }
 }
 
-export function renderToast(message, action) {
+export function addBlock(elementId: string, html: string) {
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.insertAdjacentHTML("beforeend", html);
+  }
+}
+
+export function renderToast(message: any, action?: any) {
   let messageText = "";
 
   if (message != null) {
@@ -23,17 +32,7 @@ export function renderToast(message, action) {
       if (action != null && action.handler != null) {
         action.handler();
       }
-      renderToast(null, "");
+      renderToast(null);
     };
   }
-}
-
-export function getUserData(key: unknown): string {
-  if (typeof key == "string") return localStorage.getItem(key);
-  return null;
-}
-
-export function getFavoritesAmount(key: unknown): string {
-  if (typeof key == "string") return localStorage.getItem(key);
-  return null;
 }

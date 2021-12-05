@@ -1,95 +1,126 @@
 import { renderSearchFormBlock } from "./search-form.js";
 import { renderSearchStubBlock } from "./search-results.js";
 import { renderUserBlock } from "./user.js";
-import { renderToast, getUserData, getFavoritesAmount } from "./lib.js";
+import { renderToast } from "./lib.js";
+// import { FlatRentSdk } from "./flat-rent-sdk.js";
+import { FlatRentSdk } from "./providers/flat-rent-sdk/flat-rent-sdk.js";
 
-localStorage.setItem(
-  "user",
-  JSON.stringify({
-    username: "Nathan Mianev",
-    avatarUrl: "../img/avatar.png",
-  })
+// import { Homy } from "./homy.js";
+import { Homy } from "./providers/homy/homy.js";
+import { renderSearchResultsBlock } from "./search-results.js";
+import { Hotel } from "./hotel.js";
+import { DatesHelper } from "./datesHelper.js";
+
+const flatSdk: FlatRentSdk = new FlatRentSdk();
+const homySdk: Homy = new Homy();
+const today = new Date();
+let checkin = today;
+let checkout = DatesHelper.addDays(DatesHelper.cloneDate(today), 2);
+let hotels: Hotel[] = [];
+
+function sortByPriceAscending(one: Hotel, two: Hotel) {
+  return one.totalPrice - two.totalPrice;
+}
+
+function sortByPriceDescending(one: Hotel, two: Hotel) {
+  return two.totalPrice - one.totalPrice;
+}
+
+renderUserBlock(10);
+
+renderSearchFormBlock(
+  checkin.toISOString().split("T")[0]!,
+  checkout.toISOString().split("T")[0]!
 );
 
-localStorage.setItem("favoritesAmount", "11");
+renderSearchStubBlock();
 
-const { username, avatarUrl } = JSON.parse(getUserData("user"));
-const favoritesAmount: number = +getFavoritesAmount("favoritesAmount");
+const form = document.getElementById("searchForm");
 
-window.addEventListener("DOMContentLoaded", () => {
-  renderUserBlock(username, avatarUrl, favoritesAmount);
-  renderSearchFormBlock("2021-06-30", "2021-06-30");
-  renderSearchStubBlock();
-  renderToast(
-    {
-      text: "Это пример уведомления. Используйте его при необходимости",
-      type: "success",
-    },
-    {
-      name: "Понял",
-      handler: () => {
-        console.log("Уведомление закрыто");
-      },
-    }
-  );
+if (form) {
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form as HTMLFormElement);
+    const price = formData.get("price");
+    const checkin = formData.get("checkin");
+    const checkout = formData.get("checkout");
+    const homy = formData.get("homy");
+    const flatRent = formData.get("flat-rent");
 
-  handleSearch();
-
-  fetch("http://localhost:3000/places")
-    .then((res) => res.json())
-    .then((data) => console.log(data));
-});
-
-interface SearchFormData {
-  checkIn: string;
-  checkOut: string;
-  maxPrice: number;
-}
-
-interface Place {}
-
-function handleSearch(): SearchFormData {
-  console.log("handleSearch");
-  const searchData: SearchFormData = {
-    checkIn: "",
-    checkOut: "",
-    maxPrice: 0,
-  };
-  const form = document.getElementById("searchForm");
-  let formData = null;
-
-  if (form instanceof HTMLFormElement) {
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      formData = new FormData(form);
-      searchData.checkIn = formData.get("checkin");
-      searchData.checkOut = formData.get("checkout");
-      searchData.maxPrice = formData.get("price");
-      search(searchData);
-      return searchData;
+    console.log("form submitted: price, checkin, checkout, homy, flatRent", {
+      price,
+      checkin,
+      checkout,
+      homy,
+      flatRent,
     });
-  }
-  return null;
+
+    const searchQuery = {
+      city: "Санкт-Петербург",
+      checkInDate: new Date(checkin as string),
+      checkOutDate: new Date(checkout as string),
+      priceLimit: price,
+    };
+
+    try {
+      if (homy && !flatRent) {
+        hotels = await homySdk.search(searchQuery);
+      }
+
+      if (flatRent && !homy) {
+        hotels = await flatSdk.search(searchQuery);
+      }
+
+      if (homy && flatRent) {
+        const hotelsHomy = await homySdk.search(searchQuery);
+        const hotelsFlatRent = await flatSdk.search(searchQuery);
+        hotels = [...hotelsHomy, ...hotelsFlatRent];
+      }
+
+      hotels.sort(sortByPriceAscending);
+      renderSearchResultsBlock(hotels);
+      renderToast(
+        {
+          text: `${hotels.length} hotel(s) found!`,
+          type: "success",
+        },
+        {
+          name: "dismiss",
+          handler: () => {
+            console.log("Уведомление закрыто");
+          },
+        }
+      );
+
+      const select = document.getElementById("select");
+      console.log(select);
+      if (select) {
+        select.addEventListener("change", (e) => {
+          console.log("select changed");
+          if (e.target instanceof HTMLSelectElement) {
+            console.log(e.target.value);
+            if (e.target.value === "cheap") {
+              hotels.sort(sortByPriceAscending);
+            } else {
+              hotels.sort(sortByPriceDescending);
+            }
+            return renderSearchResultsBlock(hotels);
+          }
+        });
+      }
+    } catch (e) {
+      renderToast(
+        {
+          text: e,
+          type: "error",
+        },
+        {
+          name: "Закрыть",
+          handler: () => {
+            console.log("Уведомление закрыто");
+          },
+        }
+      );
+    }
+  });
 }
-
-function search(searchData: SearchFormData) {
-  if (searchData != null) {
-    console.log(searchData);
-  }
-}
-
-// interface callback {
-//   (error?: Error, places?: Place[]): Error | Place[];
-// }
-
-// function callback(error: Error, places: Place[]) {
-//   const randomNumber = Math.random();
-//   if (randomNumber > 0.5) {
-//     return error;
-//   }
-//   return [];
-// }
-
-// function placeRequest(searchDate) {
-//   return Promise.resolve();
-// }
