@@ -1,4 +1,5 @@
 import { addBlock, renderBlock } from "./lib.js";
+import { Hotel } from "./domain/hotel.js";
 
 export function renderSearchStubBlock() {
   renderBlock(
@@ -12,7 +13,7 @@ export function renderSearchStubBlock() {
   );
 }
 
-export function renderEmptyOrErrorSearchBlock(reasonMessage) {
+export function renderEmptyOrErrorSearchBlock(reasonMessage: string) {
   renderBlock(
     "search-results-block",
     `
@@ -24,7 +25,7 @@ export function renderEmptyOrErrorSearchBlock(reasonMessage) {
   );
 }
 
-export function renderSearchResultsBlock(hotels) {
+export function renderSearchResultsBlock(hotels: Hotel[]) {
   renderBlock(
     "search-results-block",
     `
@@ -48,10 +49,12 @@ export function renderSearchResultsBlock(hotels) {
     : renderHotels(hotels);
 }
 
-function renderHotels(hotels) {
+function renderHotels(hotels: Hotel[]) {
   for (let index = 0; index < hotels.length; index++) {
-    let { title, details, photos, totalPrice } = hotels[index];
-    renderHotel(title, details, photos[0], totalPrice);
+    let { title, details, photos, totalPrice } = hotels[index]!;
+    if (photos) {
+      renderHotel(title, details, photos[0]!, totalPrice);
+    }
   }
 }
 

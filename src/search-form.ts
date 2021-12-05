@@ -1,6 +1,6 @@
 import { renderBlock } from "./lib.js";
 
-export function renderSearchFormBlock(checkin, checkout) {
+export function renderSearchFormBlock(checkin: string, checkout: string) {
   renderBlock(
     "search-form-block",
     `
